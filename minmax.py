@@ -1,7 +1,7 @@
 from copy import deepcopy
 from functools import cache
 from queue import Queue
-from constants import ALPHA_START, BETA_START, COMMANDO, COMMANDO_PLACE_MATRIX, GUNNER, GUNNER_PLACE_MATRIX, INFANTRY, INFANTRY_ATTACK_MATRIX, INFANTRY_PLACE_MATRIX, MORTAR, MORTAR_PLACE_MATRIX
+from constants import ALPHA_START, BETA_START, COMMANDO, COMMANDO_ATTACK_MATRIX, COMMANDO_PLACE_MATRIX, GUNNER, GUNNER_PLACE_MATRIX, INFANTRY, INFANTRY_ATTACK_MATRIX, INFANTRY_PLACE_MATRIX, MORTAR, MORTAR_PLACE_MATRIX
 from heuristic import evaluate, is_attacked, is_free, possible_moves
 
 
@@ -15,15 +15,9 @@ def minmax(
     alpha=(ALPHA_START, None),
     beta=(BETA_START, None),
     my_move=None,
-):  # vraca (value,new_state,move)
+):  # vraca (value,move)
     if depth == 0:
-        return
-        # state,
-        # depth,
-        # is_player_min,
-        # alpha,
-        # beta,
-        (evaluate(state, is_player_min if on_turn_min else on_turn_max), my_move)
+        return (evaluate(state, is_player_min if on_turn_min else on_turn_max), my_move)
 
     if is_player_min:
         for new_state in generate_next_states(state, on_turn_max, on_turn_min, True):
@@ -37,7 +31,7 @@ def minmax(
                     False,
                     alpha,
                     beta,
-                    new_state if my_move is None else my_move
+                    new_state[1] if my_move is None else my_move
                 ),
                 key=lambda x: x[0])
             if alpha[0] >= beta[0]:
@@ -56,7 +50,7 @@ def minmax(
                     True,
                     alpha,
                     beta,
-                    new_state if my_move is None else my_move
+                    new_state[1] if my_move is None else my_move
                 ),
                 key=lambda x: x[0])
             if alpha[0] >= beta[0]:
