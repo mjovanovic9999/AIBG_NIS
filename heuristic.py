@@ -1,5 +1,6 @@
 from math import sqrt
 import constants
+from minmax import can_commando_attack, generate_figure_moves
 
 def is_free(game_state:dict,x:int,y:int):
     for figure in game_state:
@@ -139,7 +140,7 @@ def is_attacked(attacker:dict, defender:dict, game_state:list):
             elif(diffX == diffY) and diffX > 1 and diffX < 4:
                 return True
     elif (attacker["figureType"] == constants.COMMANDO):
-        return commando_attack(attacker,defender,game_state)
+        return can_commando_attack(game_state,attacker,(defender["coordX"],defender["coordY"]))
 
     return False
 
