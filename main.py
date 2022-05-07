@@ -1,3 +1,4 @@
+from typing import Any
 from connection import init_connection
 
 
@@ -6,9 +7,6 @@ from connection import init_connection
 #             { "coordX": 1, "coordY": 3, "figureType": 1, "playerID": "123" }]
 
 
-
 def main():
-    game_state = { "botID" : "", "table_state" : {}}
+    game_state = {"botID": "", "table_state": []}
     init_connection(game_state)
-
-
