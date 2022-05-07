@@ -1,4 +1,4 @@
-from cv2 import sqrt
+from math import sqrt
 import constants
 
 def is_free(game_state:dict,x:int,y:int):
@@ -157,7 +157,9 @@ def evaluate(game_state:list,on_turn:str):
     fig_shift=9
     att_shift=7
     bait_shift=5
-    
+    pos_shift = 5
+    setAttacking = set()
+
     value=0
 
     for figure in game_state:
@@ -198,7 +200,27 @@ def evaluate(game_state:list,on_turn:str):
                         value+=figure_val<<att_shift
 
         #pozicija
-        
+        if(figure["playerID"] == on_turn):
+            if (figure["figureType"] == constants.INFANTRY):
+                for positions in constants.INFANTRY_ATTACK_MATRIX:
+                    if -1<figure["coordX"]+positions[0]<13 and -1<figure["coordY"]+positions[1]<11:
+                        setAttacking.add((figure["coordX"]+positions[0],figure["coordY"]+positions[1]))
+            if(figure["figureType"] == constants.GUNNER):
+                for positions in constants.GUNNER_ATTACK_MATRIX:
+                    if -1<figure["coordX"]+positions[0]<13 and -1<figure["coordY"]+positions[1]<11:
+                        setAttacking.add((figure["coordX"]+positions[0],figure["coordY"]+positions[1]))
+            if(figure["figureType"] == constants.MORTAR):
+                for positions in constants.MORTAR_ATTACK_MATRIX:
+                    if -1<figure["coordX"]+positions[0]<13 and -1<figure["coordY"]+positions[1]<11:
+                        setAttacking.add((figure["coordX"]+positions[0],figure["coordY"]+positions[1]))
+            if(figure["figureType"] == constants.COMMANDO):
+                for positions in constants.COMMANDO_ATTACK_MATRIX:
+                    if -1<figure["coordX"]+positions[0]<13 and -1<figure["coordY"]+positions[1]<11:
+                        setAttacking.add((figure["coordX"]+positions[0],figure["coordY"]+positions[1]))
+        value += len(setAttacking)<<pos_shift
+
+
+
 
         
 
