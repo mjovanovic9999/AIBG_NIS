@@ -63,7 +63,7 @@ def minmax(
 
 
 def generate_next_states(state, on_turn_max, on_turn_min, is_player_min):
-    #generate_all_moves filtrirati validne poteze
+    #generate_all_moves pa filtrirati validne poteze
     pass
 
 def generate_all_moves(state, on_turn_max, on_turn_min, is_player_min):
@@ -74,4 +74,5 @@ def generate_all_moves(state, on_turn_max, on_turn_min, is_player_min):
     for figure in state:
         if figure["playerID"]== on_turn:
             my_figures.append(figure) 
+    
     
