@@ -1,5 +1,7 @@
+from copy import deepcopy
 from functools import cache
-from constants import ALPHA_START, BETA_START
+from telnetlib import NEW_ENVIRON
+from constants import ALPHA_START, BETA_START, COMMANDO_PLACE_MATRIX, GUNNER, GUNNER_PLACE_MATRIX, INFANTRY, INFANTRY_ATTACK_MATRIX, INFANTRY_PLACE_MATRIX, MORTAR, MORTAR_PLACE_MATRIX
 from heuristic import evaluate
 
 
@@ -68,11 +70,50 @@ def generate_next_states(state, on_turn_max, on_turn_min, is_player_min):
 
 def generate_all_moves(state, on_turn_max, on_turn_min, is_player_min):
     on_turn=on_turn_min if is_player_min else on_turn_max
-    my_figures=[]
+
+    my_figures_indexes=[]
     new_states=[]
 
-    for figure in state:
+    for index,figure in state:
         if figure["playerID"]== on_turn:
-            my_figures.append(figure) 
+            my_figures_indexes.append(index)
+
+    for index in my_figures_indexes:
+        
+        if state[index]["figureType"]==INFANTRY:
+            for position in INFANTRY_PLACE_MATRIX:#moves
+                #da l je validan potez tu
+
+                new_states.append(deepcopy(state))        
+                new_states[-1][index]["coordX"]+=position[0]
+                new_states[-1][index]["coordY"]+=position[1]
+            
+            for attack in INFANTRY_ATTACK_MATRIX:
+                pass#isAttacked
+
+
+            
+        elif figure["figureType"]==GUNNER:
+            for position in GUNNER_PLACE_MATRIX:
+                #da l je validan potez tu
+
+                new_states.append(deepcopy(state))        
+                new_states[-1][index]["coordX"]+=position[0]
+                new_states[-1][index]["coordY"]+=position[1]
+        elif figure["figureType"]==MORTAR:
+            for position in MORTAR_PLACE_MATRIX:
+                #da l je validan potez tu
+
+                new_states.append(deepcopy(state))        
+                new_states[-1][index]["coordX"]+=position[0]
+                new_states[-1][index]["coordY"]+=position[1]
+        else:
+            for position in COMMANDO_PLACE_MATRIX:
+                #da l je validan potez tu
+
+                new_states.append(deepcopy(state))        
+                new_states[-1][index]["coordX"]+=position[0]
+                new_states[-1][index]["coordY"]+=position[1]
     
-    
+        #attacks
+
