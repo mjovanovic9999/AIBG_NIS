@@ -1,7 +1,7 @@
 from copy import deepcopy
 from functools import cache
 from queue import Queue
-from constants import ALPHA_START, BETA_START, COMMANDO, COMMANDO_PLACE_MATRIX, GUNNER, GUNNER_PLACE_MATRIX, INFANTRY, INFANTRY_ATTACK_MATRIX, INFANTRY_PLACE_MATRIX, MORTAR, MORTAR_PLACE_MATRIX
+from constants import ALPHA_START, BETA_START, COMMANDO, COMMANDO_PLACE_MATRIX, GUNNER, GUNNER_PLACE_MATRIX, INFANTRY, INFANTRY_ATTACK_MATRIX, INFANTRY_PLACE_MATRIX, MORTAR, MORTAR_PLACE_MATRIX,COMMANDO_ATTACK_MATRIX
 from heuristic import evaluate, is_attacked, is_free, possible_moves
 
 
@@ -63,6 +63,15 @@ def minmax(
                 return beta
         return alpha
 
+def form_action(type,figure_coords:tuple,id,target:tuple,figure_type):
+    action={
+        "type": type,
+        'figureCoords': {'x': figure_coords[0],'y': figure_coords[1]},
+        'playerID': id,
+        'targetCoords': {'x': target[0],'y': target[1]},
+        'figureType': figure_type
+    }
+    return action
 
 def generate_next_states(state, on_turn_max, on_turn_min, is_player_min):
     on_turn = on_turn_min if is_player_min else on_turn_max
@@ -70,6 +79,8 @@ def generate_next_states(state, on_turn_max, on_turn_min, is_player_min):
     my_figures_indexes = []
     opponent_figures_indexes = []
     new_states = []
+
+    action={'type': 1,'figureCoords': {'x': 1,'y': 2},'playerID': '123','targetCoords': {'x': 1,'y': 2},'figureType': 0}
 
     for index, figure in state:
         if figure["playerID"] == on_turn:
@@ -84,32 +95,32 @@ def generate_next_states(state, on_turn_max, on_turn_min, is_player_min):
             posible_positions = generate_figure_moves(
                 state, state[index], INFANTRY, INFANTRY_PLACE_MATRIX)
             for move in posible_positions:
-                new_states.append(deepcopy(state))
-                new_states[-1][index]["coordX"] = move[0]
-                new_states[-1][index]["coordY"] = move[1]
+                new_states.append((deepcopy(state),form_action(0,(state[index]["coordX"],state[index]["coordY"]),on_turn,move,state[index]["figureType"])))
+                new_states[-1][0][index]["coordX"] = move[0]
+                new_states[-1][0][index]["coordY"] = move[1]
 
         elif figure["figureType"] == GUNNER:
             posible_positions = generate_figure_moves(
                 state, state[index], GUNNER, GUNNER_PLACE_MATRIX)
             for move in posible_positions:
-                new_states.append(deepcopy(state))
-                new_states[-1][index]["coordX"] = move[0]
-                new_states[-1][index]["coordY"] = move[1]
+                new_states.append((deepcopy(state),form_action(0,(state[index]["coordX"],state[index]["coordY"]),on_turn,move,state[index]["figureType"])))
+                new_states[-1][0][index]["coordX"] = move[0]
+                new_states[-1][0][index]["coordY"] = move[1]
 
         elif figure["figureType"] == MORTAR:
             posible_positions = generate_figure_moves(
                 state, state[index], MORTAR, MORTAR_PLACE_MATRIX)
             for move in posible_positions:
-                new_states.append(deepcopy(state))
-                new_states[-1][index]["coordX"] = move[0]
-                new_states[-1][index]["coordY"] = move[1]
+                new_states.append((deepcopy(state),form_action(0,(state[index]["coordX"],state[index]["coordY"]),on_turn,move,state[index]["figureType"])))
+                new_states[-1][0][index]["coordX"] = move[0]
+                new_states[-1][0][index]["coordY"] = move[1]
         else:
             posible_positions = generate_figure_moves(
                 state, state[index], COMMANDO, COMMANDO_PLACE_MATRIX)
             for move in posible_positions:
-                new_states.append(deepcopy(state))
-                new_states[-1][index]["coordX"] = move[0]
-                new_states[-1][index]["coordY"] = move[1]
+                new_states.append((deepcopy(state),form_action(0,(state[index]["coordX"],state[index]["coordY"]),on_turn,move,state[index]["figureType"])))
+                new_states[-1][0][index]["coordX"] = move[0]
+                new_states[-1][0][index]["coordY"] = move[1]
 
     # attacks
     attacked_opponent_indexes = []
