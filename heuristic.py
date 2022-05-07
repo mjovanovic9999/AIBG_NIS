@@ -1,2 +1,4 @@
 
 
+def heuristic(state):
+    pass
