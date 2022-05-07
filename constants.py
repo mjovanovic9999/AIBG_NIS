@@ -75,7 +75,7 @@ MORTAR_ATTACK_MATRIX=[
                           (4,0),
 ]
 
-COMMANDO_ATTACK_MATRIX=[
+COMMANDO_ATTACK_MATRIX=[#special
                        (-3,0),
                (-2,-1),(-2,0),(-2,1),
        (-1,-2),(-1,-1),(-1,0),(-1,1),(-1,2),
