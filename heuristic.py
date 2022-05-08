@@ -16,7 +16,7 @@ def evaluate(game_state:list,on_turn:str):
     fig_shift=9
     att_shift=9
     bait_shift=5
-    pos_shift = 6
+    pos_shift = 9
     setAttacking = set()
 
     value=0

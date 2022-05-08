@@ -1,3 +1,4 @@
+import bisect
 from copy import deepcopy
 from queue import Queue
 from constants import ALPHA_START, BETA_START, COMMANDO, COMMANDO_ATTACK_MATRIX, COMMANDO_PLACE_MATRIX, GUNNER, GUNNER_PLACE_MATRIX, INFANTRY, INFANTRY_ATTACK_MATRIX, INFANTRY_PLACE_MATRIX, MORTAR, MORTAR_PLACE_MATRIX
@@ -117,11 +118,15 @@ def form_action(type, figure_coords: tuple, id, target: tuple, figure_type):
 
 
 def generate_next_states(state, on_turn_max, on_turn_min, is_player_min):
+    max_states=5
+
     on_turn = on_turn_min if is_player_min else on_turn_max
 
     my_figures_indexes = []
     opponent_figures_indexes = []
     new_states = []
+
+    best_values=list()
 
     action = {'type': 1, 'figureCoords': {'x': 1, 'y': 2},
               'playerID': '123', 'targetCoords': {'x': 1, 'y': 2}, 'figureType': 0}
@@ -139,36 +144,24 @@ def generate_next_states(state, on_turn_max, on_turn_min, is_player_min):
             posible_positions = generate_figure_moves(
                 state[0], state[0][index], INFANTRY, INFANTRY_PLACE_MATRIX)
             for move in posible_positions:
-                new_states.append((deepcopy(state[0]), form_action(
-                    0, (state[0][index]["coordX"], state[0][index]["coordY"]), on_turn, move, state[0][index]["figureType"])))
-                new_states[-1][0][index]["coordX"] = move[0]
-                new_states[-1][0][index]["coordY"] = move[1]
+                add_movement(new_states,index,state,move,on_turn,best_values,max_states,is_player_min)
 
         elif figure["figureType"] == GUNNER:
             posible_positions = generate_figure_moves(
                 state[0], state[0][index], GUNNER, GUNNER_PLACE_MATRIX)
             for move in posible_positions:
-                new_states.append((deepcopy(state[0]), form_action(
-                    0, (state[0][index]["coordX"], state[0][index]["coordY"]), on_turn, move, state[0][index]["figureType"])))
-                new_states[-1][0][index]["coordX"] = move[0]
-                new_states[-1][0][index]["coordY"] = move[1]
+                add_movement(new_states,index,state,move,on_turn,best_values,max_states,is_player_min)
 
         elif figure["figureType"] == MORTAR:
             posible_positions = generate_figure_moves(
                 state[0], state[0][index], MORTAR, MORTAR_PLACE_MATRIX)
             for move in posible_positions:
-                new_states.append((deepcopy(state[0]), form_action(
-                    0, (state[0][index]["coordX"], state[0][index]["coordY"]), on_turn, move, state[0][index]["figureType"])))
-                new_states[-1][0][index]["coordX"] = move[0]
-                new_states[-1][0][index]["coordY"] = move[1]
+                add_movement(new_states,index,state,move,on_turn,best_values,max_states,is_player_min)
         else:
             posible_positions = generate_figure_moves(
                 state[0], state[0][index], COMMANDO, COMMANDO_PLACE_MATRIX)
             for move in posible_positions:
-                new_states.append((deepcopy(state[0]), form_action(
-                    0, (state[0][index]["coordX"], state[0][index]["coordY"]), on_turn, move, state[0][index]["figureType"])))
-                new_states[-1][0][index]["coordX"] = move[0]
-                new_states[-1][0][index]["coordY"] = move[1]
+                add_movement(new_states,index,state,move,on_turn,best_values,max_states,is_player_min)
 
     # attacks
     eating_pair_indexes = []  # tuple(index protivik,my index)
@@ -185,42 +178,87 @@ def generate_next_states(state, on_turn_max, on_turn_min, is_player_min):
                 break
 
     for eating_pair in eating_pair_indexes:
-        new_states.append(
-            (deepcopy(state[0]),
-             form_action(1,
-             (state[0][eating_pair[1]]["coordX"],
-              state[0][eating_pair[1]]["coordY"]),
-                on_turn,
-                (state[0][eating_pair[0]]["coordX"],
-                 state[0][eating_pair[0]]["coordY"]),
-                state[0][eating_pair[1]]["figureType"]))
-        )
-
-        # new_states.append(deepcopy(state[0]))
-        del new_states[-1][0][eating_pair[0]]
+        add_attack(new_states,state,eating_pair,on_turn,best_values,max_states,is_player_min)
 
     if commando_index:
         for opponent_index in opponent_figures_indexes:
             if is_attacked(state[0][commando_index], state[0][opponent_index], state[0]):
-
-                new_states.append(
-                    (deepcopy(state[0]),
-                     form_action(1,
-                                 (state[0][commando_index]["coordX"],
-                                  state[0][commando_index]["coordY"]),
-                                 on_turn,
-                                 (state[0][opponent_index]["coordX"],
-                                     state[0][opponent_index]["coordY"]),
-                                 commando_index))
-                )
-
-                new_states[-1][0][commando_index]["coordX"] = state[0][opponent_index]["coordX"]
-                new_states[-1][0][commando_index]["coordY"] = state[0][opponent_index]["coordY"]
-
-                del new_states[-1][0][opponent_index]
-
+                add_commando_attack(new_states,state,commando_index,on_turn,opponent_index,best_values,max_states,is_player_min)
+    state_cleanup(is_player_min,best_values,new_states,on_turn)
     return new_states
 
+def state_cleanup(is_player_min,best_values,new_states,on_turn):
+    to_remove=list()
+    for state in new_states:
+        if is_player_min:
+            if evaluate(state[0],on_turn)>best_values[-1]:
+                to_remove.append(state)
+        else:
+            if evaluate(state[0],on_turn)<best_values[0]:
+                to_remove.append(state)
+    for s in to_remove:
+        new_states.remove(s)
+
+def state_insert(is_player_min,best_values,max_states,new_states,on_turn):
+    if is_player_min:
+        eval=evaluate(new_states[-1][0],on_turn)
+        if len(best_values)<max_states:
+            bisect.insort(best_values,eval)
+        elif eval<best_values[-1]:
+            bisect.insort(best_values,eval)
+            best_values.remove(best_values[-1])
+        else:
+            new_states.remove(new_states[-1])
+    else:
+        eval=evaluate(new_states[-1][0],on_turn)
+        if len(best_values)<max_states:
+            bisect.insort(best_values,eval)
+        elif eval>best_values[0]:
+            bisect.insort(best_values,eval)
+            best_values.remove(best_values[0])
+        else:
+            new_states.remove(new_states[-1])
+
+def add_movement(new_states,index,state,move,on_turn,best_values,max_states,is_player_min):
+    new_states.append((deepcopy(state[0]), form_action(
+        0, (state[0][index]["coordX"], state[0][index]["coordY"]), on_turn, move, state[0][index]["figureType"])))
+    new_states[-1][0][index]["coordX"] = move[0]
+    new_states[-1][0][index]["coordY"] = move[1]
+    state_insert(is_player_min,best_values,max_states,new_states,on_turn)
+    
+
+def add_attack(new_states,state,eating_pair,on_turn,best_values,max_states,is_player_min):
+    new_states.append(
+        (deepcopy(state[0]),
+            form_action(1,
+            (state[0][eating_pair[1]]["coordX"],
+            state[0][eating_pair[1]]["coordY"]),
+            on_turn,
+            (state[0][eating_pair[0]]["coordX"],
+                state[0][eating_pair[0]]["coordY"]),
+            state[0][eating_pair[1]]["figureType"]))
+    )
+    # new_states.append(deepcopy(state[0]))
+    del new_states[-1][0][eating_pair[0]]
+    state_insert(is_player_min,best_values,max_states,new_states,on_turn)
+
+def add_commando_attack(new_states,state,commando_index,on_turn,opponent_index,best_values,max_states,is_player_min):
+    new_states.append(
+        (deepcopy(state[0]),
+            form_action(1,
+                        (state[0][commando_index]["coordX"],
+                        state[0][commando_index]["coordY"]),
+                        on_turn,
+                        (state[0][opponent_index]["coordX"],
+                            state[0][opponent_index]["coordY"]),
+                        commando_index))
+    )
+
+    new_states[-1][0][commando_index]["coordX"] = state[0][opponent_index]["coordX"]
+    new_states[-1][0][commando_index]["coordY"] = state[0][opponent_index]["coordY"]
+
+    del new_states[-1][0][opponent_index]
+    state_insert(is_player_min,best_values,max_states,new_states,on_turn)
 
 def generate_figure_moves(game_state, figure, fig_type, fig_move_matrix):
     all_moves = set()
