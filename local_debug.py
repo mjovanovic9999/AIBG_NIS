@@ -1,6 +1,8 @@
 from constants import GUNNER,MORTAR,COMMANDO,INFANTRY
 from helpers import print_table,gen_table_state_with_empty_positions
 from minmax import minmax
+from copy import deepcopy
+from connection import validate_move
 
 init_state = [
         {"coordX": 0,"coordY": 2, "figureType": GUNNER, "playerID": "1"} ,
@@ -23,6 +25,9 @@ init_state = [
 ]
 
 def play_move(state,move):
+    for_validation=deepcopy(move)
+    for_validation["GB"]=state
+    #print(validate_move(for_validation))
     #VALIDATORAAT
     toremove=dict()
     if(move["type"]==0):
