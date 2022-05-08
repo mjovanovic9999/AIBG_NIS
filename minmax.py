@@ -105,7 +105,7 @@ def minmax_dict(
         for new_state in new_states:
             alpha = max(
                 alpha,
-                minmax(
+                minmax_dict(
                     new_state,
                     depth-1,
                     on_turn_max,
@@ -136,17 +136,17 @@ def pvs(
         return (evaluate(state[0], on_turn_min if is_player_min else on_turn_max) *(-1 if is_player_min else 1) , my_move)
 
 
-    new_states = generate_next_states(state, on_turn_max, on_turn_min, True)
+    new_states = generate_next_states(state, on_turn_max, on_turn_min, is_player_min)
 
     for new_state in new_states:
         if new_state == new_states[0]:
-            tmp = pvs(state, depth-1, on_turn_max, on_turn_min,
+            tmp = pvs(new_state, depth-1, on_turn_max, on_turn_min,
                       not is_player_min, (-beta[0],
                                           beta[1]), (-alpha[0], alpha[1]),
                       new_state[1] if my_move is None else my_move)
             score = (-tmp[0], tmp[1])
         else:
-            tmp = pvs(state, depth-1, on_turn_max, on_turn_min,
+            tmp = pvs(new_state, depth-1, on_turn_max, on_turn_min,
                       not is_player_min, (-alpha[0]-1,
                                           alpha[1]), (-alpha[0], alpha[1]),
                       new_state[1] if my_move is None else my_move)
@@ -161,7 +161,7 @@ def pvs(
         alpha = max(alpha, score, key=lambda x: x[0])
 
         if alpha[0] >= beta[0]:
-            return beta
+            break
     return alpha
 
 
