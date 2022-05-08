@@ -6,7 +6,7 @@ from minmax import minmax
 init_state = [
         {"coordX": 0,"coordY": 2, "figureType": GUNNER, "playerID": "1"} ,
         {"coordX": 0,"coordY": 4, "figureType": MORTAR, "playerID": "1"},
-        {"coordX": 0,"coordY": 6, "figureType": COMMANDO, "playerID": "1"},
+        {"coordX": 9,"coordY": 5, "figureType": COMMANDO, "playerID": "1"},
         {"coordX": 0,"coordY": 8, "figureType": GUNNER, "playerID": "1"},
         {"coordX": 2,"coordY": 2, "figureType": INFANTRY, "playerID": "1" },
         {"coordX": 2,"coordY": 4, "figureType": INFANTRY, "playerID": "1" },

@@ -130,7 +130,7 @@ def generate_next_states(state, on_turn_max, on_turn_min, is_player_min):
     for eating_pair in eating_pair_indexes:
         add_attack(new_states,state,eating_pair,on_turn,best_values,max_states,is_player_min)
 
-    if commando_index:
+    if commando_index is not None:
         for opponent_index in opponent_figures_indexes:
             if is_attacked(state[0][commando_index], state[0][opponent_index], state[0]):
                 add_commando_attack(new_states,state,commando_index,on_turn,opponent_index,best_values,max_states,is_player_min)
