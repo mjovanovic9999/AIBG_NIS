@@ -3,6 +3,8 @@ import socketio
 import requests
 
 from constants import MINMAX_DEPTH
+from helpers import print_table
+from minmax import minmax
 
 
 def init_connection(game_state: dict[str, Any]):
@@ -10,9 +12,10 @@ def init_connection(game_state: dict[str, Any]):
 
     add_event_handlers(sio, game_state)
 
+    ime = input("Ime")
     sio.connect("http://localhost:3000")
 
-    sio.emit('setName', "Klika010")
+    sio.emit('setName', ime)
 
     sio.wait()
 
@@ -33,13 +36,14 @@ def add_event_handlers(sio: socketio.Client, game_state: dict[str, Any]) -> None
     @sio.event
     def yourTurn(table_state: dict[str, Any]):
         print("Your turn!")
+        print_table(table_state, game_state["botID"])
         game_state["table_state"] = table_state
         
-        # for position in table_state:
-        #     if position["botID"] != game_state["botID"]:
-        #         print(position["botID"])
-        #         submit_move(minmax(table_state, MINMAX_DEPTH, game_state["botID"])[1])
-        #         break
+        for position in table_state:
+            if position["botID"] != game_state["botID"]:
+                print(position["botID"])
+                submit_move(minmax(table_state, MINMAX_DEPTH, game_state["botID"], position["botID"])[1])
+                break
 
     @sio.event
     def readyToBattle(bot_id: str):
