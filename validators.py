@@ -8,7 +8,7 @@ def can_commando_attack(game_state, figure, victim):
         origin = (figure["coordX"], figure["coordY"])
         q = Queue()
         q.put(origin)
-        while q:
+        while not q.empty():
             pos = q.get()
             for x in range(-1, 2):
                 for y in range(-1, 2):
