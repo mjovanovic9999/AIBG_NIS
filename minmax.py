@@ -83,26 +83,26 @@ def pvs(
         return (evaluate(state, on_turn_min if is_player_min else on_turn_max), my_move)
 
     new_states = generate_next_states(state, on_turn_max, on_turn_min, True)
-    if is_player_min:
-        for new_state in new_states:
-            if new_state == new_states[0]:
-                score = -pvs(state, depth-1, on_turn_max, on_turn_min,
-                                    not is_player_min, -beta, -alpha,
-                                    new_state[1] if my_move is None else my_move)
-            else:
-                score = -pvs(state, depth-1, on_turn_max, on_turn_min,
-                                    not is_player_min, -alpha-1, -alpha,
-                                    new_state[1] if my_move is None else my_move)
+ 
+    for new_state in new_states:
+        if new_state == new_states[0]:
+            score = pvs(state, depth-1, on_turn_max, on_turn_min,
+                                not is_player_min, -beta, -alpha,
+                                new_state[1] if my_move is None else my_move)
+        else:
+            score = pvs(state, depth-1, on_turn_max, on_turn_min,
+                                not is_player_min, -alpha-1, -alpha,
+                                new_state[1] if my_move is None else my_move)
 
-                if alpha < score and score < beta:
-                    score = -pvs(state, depth-1, on_turn_max, on_turn_min,
-                                        not is_player_min, -beta, -score,
-                                        new_state[1] if my_move is None else my_move)
-            alpha = max(alpha, score, key=lambda x: x[0])
+            if alpha < score and score < beta:
+                score = pvs(state, depth-1, on_turn_max, on_turn_min,
+                                    not is_player_min, -beta, -score,
+                                    new_state[1] if my_move is None else my_move)
+        alpha = max(alpha, score, key=lambda x: x[0])
 
-            if alpha[0] >= beta[0]:
-                return alpha
-        return alpha
+        if alpha[0] >= beta[0]:
+            return beta
+    return alpha
 
 
 def form_action(type, figure_coords: tuple, id, target: tuple, figure_type):
@@ -214,10 +214,10 @@ def generate_next_states(state, on_turn_max, on_turn_min, is_player_min):
                                  commando_index))
                 )
 
-                new_states[-1][commando_index]["coordX"] = state[0][opponent_index]["coordX"]
-                new_states[-1][commando_index]["coordY"] = state[0][opponent_index]["coordY"]
+                new_states[-1][0][commando_index]["coordX"] = state[0][opponent_index]["coordX"]
+                new_states[-1][0][commando_index]["coordY"] = state[0][opponent_index]["coordY"]
 
-                del new_states[-1][opponent_index]
+                del new_states[-1][0][opponent_index]
 
     return new_states
 
