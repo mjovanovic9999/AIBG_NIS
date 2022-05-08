@@ -178,7 +178,7 @@ def form_action(type, figure_coords: tuple, id, target: tuple, figure_type):
 
 
 def generate_next_states(state, on_turn_max, on_turn_min, is_player_min):
-    max_states=5
+    max_states=3
 
     on_turn = on_turn_min if is_player_min else on_turn_max
 
@@ -245,16 +245,16 @@ def generate_next_states(state, on_turn_max, on_turn_min, is_player_min):
             if is_attacked(state[0][commando_index], state[0][opponent_index], state[0]):
                 add_commando_attack(new_states,state,commando_index,on_turn,opponent_index,best_values,max_states,is_player_min)
     state_cleanup(is_player_min,best_values,new_states,on_turn)
-    return new_states
+    return [x[0] for x in new_states]
 
 def state_cleanup(is_player_min,best_values,new_states,on_turn):
     to_remove=list()
     for state in new_states:
         if is_player_min:
-            if evaluate(state[0],on_turn)>best_values[-1]:
+            if state[1]>best_values[-1]:
                 to_remove.append(state)
         else:
-            if evaluate(state[0],on_turn)<best_values[0]:
+            if state[1]<best_values[0]:
                 to_remove.append(state)
     for s in to_remove:
         new_states.remove(s)
@@ -262,6 +262,8 @@ def state_cleanup(is_player_min,best_values,new_states,on_turn):
 def state_insert(is_player_min,best_values,max_states,new_states,on_turn):
     if is_player_min:
         eval=evaluate(new_states[-1][0],on_turn)
+        new_states.append((new_states[-1],eval))
+        new_states.remove(new_states[-2])
         if len(best_values)<max_states:
             bisect.insort(best_values,eval)
         elif eval<best_values[-1]:
@@ -271,6 +273,8 @@ def state_insert(is_player_min,best_values,max_states,new_states,on_turn):
             new_states.remove(new_states[-1])
     else:
         eval=evaluate(new_states[-1][0],on_turn)
+        new_states.append((new_states[-1],eval))
+        new_states.remove(new_states[-2])
         if len(best_values)<max_states:
             bisect.insort(best_values,eval)
         elif eval>best_values[0]:

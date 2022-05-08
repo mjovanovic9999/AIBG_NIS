@@ -14,9 +14,9 @@ def get_figure_value(figure:dict):
 
 def evaluate(game_state:list,on_turn:str):
     fig_shift=9
-    att_shift=3
+    att_shift=4
     bait_shift=2
-    pos_shift = 2
+    pos_shift = 1
     setAttacking = set()
 
     value=0

@@ -54,7 +54,7 @@ def play_move(state,move):
 def start_game():
     minimax_depth=3
     state=init_state
-    print_table(gen_table_state_with_empty_positions(state))
+    print_table(gen_table_state_with_empty_positions(state),"1")
     while True:
         old_time=time.time()
         heur,move=minmax((state,None),minimax_depth,"1","2")
@@ -62,7 +62,7 @@ def start_game():
         print(heur)
         print(move)
         play_move(state,move)
-        print_table(gen_table_state_with_empty_positions(state))
+        print_table(gen_table_state_with_empty_positions(state),"1")
 
         old_time=time.time()
         heur,move=minmax((state,None),minimax_depth,"2","1")
@@ -71,7 +71,7 @@ def start_game():
         print(heur)
         print(move)
         play_move(state,move)
-        print_table(gen_table_state_with_empty_positions(state))
+        print_table(gen_table_state_with_empty_positions(state),"1")
 
 
 
