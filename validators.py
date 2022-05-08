@@ -24,8 +24,8 @@ def can_commando_attack(game_state, figure, victim):
 def is_free(game_state:dict,x:int,y:int):
     for figure in game_state:
         if(figure["coordX"]==x and figure["coordY"]==y):
-            return True
-    return False
+            return False
+    return True
 
 def dist_heuristic(a,b):
     return sqrt(a**2+b**2)
