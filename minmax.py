@@ -15,10 +15,8 @@ def minmax(
     beta=(BETA_START, None),
     my_move=None,
 ):  # vraca (value,move)
-    if depth == 0:
-        if not my_move=={'type': 0, 'figureCoords': {'x': 0, 'y': 2}, 'playerID': '1', 'targetCoords': {'x': 0, 'y': 1}, 'figureType': 1}:
-            pass
-        return (evaluate(state[0], is_player_min if on_turn_min else on_turn_max), my_move)
+    if depth == 0:  # mat
+        return (evaluate(state[0], on_turn_min if is_player_min else on_turn_max), my_move)
 
     if is_player_min:
         for new_state in generate_next_states(state, on_turn_max, on_turn_min, True):
@@ -58,7 +56,7 @@ def minmax(
                 return beta
         return alpha
 
-# def iterative_deepening( 
+# def iterative_deepening(
 #     state,
 #     depth,
 #     on_turn_max,
@@ -71,62 +69,40 @@ def minmax(
 #     return
 
 
-# @cache
-# def minmax_pvs(
-#     state,
-#     depth,
-#     on_turn_max,
-#     on_turn_min,
-#     is_player_min=False,
-#     alpha=(ALPHA_START, None),
-#     beta=(BETA_START, None),
-#     my_move=None,
-# ):  # vraca (value,move)
-#     if depth == 0:
-#         return (evaluate(state, is_player_min if on_turn_min else on_turn_max), my_move)
+def pvs(
+    state,
+    depth,
+    on_turn_max,
+    on_turn_min,
+    is_player_min=False,
+    alpha=(ALPHA_START, None),
+    beta=(BETA_START, None),
+    my_move=None,
+):  # vraca (value,move)
+    if depth == 0:
+        return (evaluate(state, on_turn_min if is_player_min else on_turn_max), my_move)
 
-#     found_pvs = False
-#     new_states = generate_next_states(state, on_turn_max, on_turn_min, True)
-#     if is_player_min:
-#         for new_state in new_states:
-#             if new_state == new_states[0]:
-#                 beta = minmax_pvs(state, depth-1, on_turn_max, on_turn_min,
-#                                    not is_player_min, alpha, new_state[1] if my_move is None else my_move)
-#             beta = min(
-#                 beta,
-#                 minmax(
-#                     new_state,
-#                     depth-1,
-#                     on_turn_max,
-#                     on_turn_min,
-#                     False,
-#                     alpha,
-#                     beta,
-#                     new_state[1] if my_move is None else my_move
-#                 ),
-#                 key=lambda x: x[0])
-#             if alpha[0] >= beta[0]:
-#                 return alpha
-#         return beta
+    new_states = generate_next_states(state, on_turn_max, on_turn_min, True)
+    if is_player_min:
+        for new_state in new_states:
+            if new_state == new_states[0]:
+                score = -pvs(state, depth-1, on_turn_max, on_turn_min,
+                                    not is_player_min, -beta, -alpha,
+                                    new_state[1] if my_move is None else my_move)
+            else:
+                score = -pvs(state, depth-1, on_turn_max, on_turn_min,
+                                    not is_player_min, -alpha-1, -alpha,
+                                    new_state[1] if my_move is None else my_move)
 
-#     else:  # maxplayer
-#         for new_state in generate_next_states(state, on_turn_max, on_turn_min, False):
-#             alpha = max(
-#                 alpha,
-#                 minmax(
-#                     new_state,
-#                     depth-1,
-#                     on_turn_max,
-#                     on_turn_min,
-#                     True,
-#                     alpha,
-#                     beta,
-#                     new_state[1] if my_move is None else my_move
-#                 ),
-#                 key=lambda x: x[0])
-#             if alpha[0] >= beta[0]:
-#                 return beta
-#         return alpha
+                if alpha < score and score < beta:
+                    score = -pvs(state, depth-1, on_turn_max, on_turn_min,
+                                        not is_player_min, -beta, -score,
+                                        new_state[1] if my_move is None else my_move)
+            alpha = max(alpha, score, key=lambda x: x[0])
+
+            if alpha[0] >= beta[0]:
+                return alpha
+        return alpha
 
 
 def form_action(type, figure_coords: tuple, id, target: tuple, figure_type):
@@ -257,13 +233,10 @@ def generate_figure_moves(game_state, figure, fig_type, fig_move_matrix):
             for x in range(-1, 2):
                 for y in range(-1, 2):
                     new_pos = (pos[0]+x, pos[1]+y)
-                    if new_pos!=pos and new_pos != origin and 13 > new_pos[0] > -1 and 11 > new_pos[1] > -1:
-                        if is_free(game_state, new_pos[0], new_pos[1]) :
+                    if new_pos != pos and new_pos != origin and 13 > new_pos[0] > -1 and 11 > new_pos[1] > -1:
+                        if is_free(game_state, new_pos[0], new_pos[1]):
                             if (new_pos[0]-origin[0], new_pos[1]-origin[1]) in fig_move_matrix:
                                 if new_pos not in all_moves:
                                     all_moves.add(new_pos)
                                     q.put(new_pos)
     return all_moves
-
-
-
