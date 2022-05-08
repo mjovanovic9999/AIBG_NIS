@@ -28,11 +28,13 @@ init_state = [
 def play_move(state,move):
     for_validation=deepcopy(move)
     for_validation["GB"]=state
-    # if not validate_move(for_validation):
-    #     print(state)
-    #     print(move)
-    #     print_table(gen_table_state_with_empty_positions(state))
-    #     print("NEVALIDAN POTEZ")
+    if not validate_move(for_validation):
+        print(state)
+        print(move)
+        print_table(gen_table_state_with_empty_positions(state))
+        print("NEVALIDAN POTEZ")
+    else:
+        print("VALIDAN!")
     #VALIDATORAAT
     toremove=dict()
     if(move["type"]==0):
