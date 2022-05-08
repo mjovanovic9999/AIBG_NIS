@@ -16,7 +16,7 @@ def minmax(
     my_move=None,
 ):  # vraca (value,move)
     if depth == 0:  # mat
-        return (evaluate(state[0], on_turn_min if is_player_min else on_turn_max), my_move)
+        return (evaluate(state[0], on_turn_min if is_player_min else on_turn_max) * (-1 if is_player_min else 1) , my_move)
 
     if is_player_min:
         for new_state in generate_next_states(state, on_turn_max, on_turn_min, True):
@@ -69,18 +69,18 @@ def minmax_dict(
     state_dict=None,
 ):  # vraca (value,move)
     if depth == 0:  # mat
-        return (evaluate(state[0], on_turn_min if is_player_min else on_turn_max), my_move)
+        return (evaluate(state[0], on_turn_min if is_player_min else on_turn_max) *(-1 if is_player_min else 1) , my_move)
 
     if is_player_min:
         new_states = generate_next_states(
             state, on_turn_max, on_turn_min, True)
-            
+
         state_dict[depth] = new_states
 
         for new_state in new_states:
             beta = min(
                 beta,
-                minmax(
+                minmax_dict(
                     new_state,
                     depth-1,
                     on_turn_max,
@@ -88,7 +88,8 @@ def minmax_dict(
                     False,
                     alpha,
                     beta,
-                    new_state[1] if my_move is None else my_move
+                    new_state[1] if my_move is None else my_move,
+                    state_dict
                 ),
                 key=lambda x: x[0])
             if alpha[0] >= beta[0]:
@@ -112,7 +113,8 @@ def minmax_dict(
                     True,
                     alpha,
                     beta,
-                    new_state[1] if my_move is None else my_move
+                    new_state[1] if my_move is None else my_move,
+                    state_dict
                 ),
                 key=lambda x: x[0])
             if alpha[0] >= beta[0]:
@@ -131,7 +133,8 @@ def pvs(
     my_move=None,
 ):  # vraca (value,move)
     if depth == 0:
-        return (evaluate(state[0], on_turn_min if is_player_min else on_turn_max), my_move)
+        return (evaluate(state[0], on_turn_min if is_player_min else on_turn_max) *(-1 if is_player_min else 1) , my_move)
+
 
     new_states = generate_next_states(state, on_turn_max, on_turn_min, True)
 
