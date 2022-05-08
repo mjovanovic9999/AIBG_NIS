@@ -23,7 +23,7 @@ def can_commando_attack(game_state, figure, victim):
 
 def is_free(game_state:dict,x:int,y:int):
     for figure in game_state:
-        if(figure["coordX"]==x and figure["coordY"]==y):
+        if figure["coordX"]==x and figure["coordY"]==y:
             return False
     return True
 

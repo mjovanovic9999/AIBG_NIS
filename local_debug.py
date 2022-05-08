@@ -1,3 +1,4 @@
+import time
 from constants import GUNNER,MORTAR,COMMANDO,INFANTRY
 from helpers import print_table,gen_table_state_with_empty_positions
 from minmax import minmax
@@ -50,13 +51,20 @@ def start_game():
     state=init_state
     print_table(gen_table_state_with_empty_positions(state))
     while True:
+        old_time=time.time()
         heur,move=minmax((state,None),minimax_depth,"1","2")
+        print(time.time()-old_time)
         print(heur)
         print(move)
         play_move(state,move)
         print_table(gen_table_state_with_empty_positions(state))
 
+        old_time=time.time()
         heur,move=minmax((state,None),minimax_depth,"2","1")
+        print(time.time()-old_time)
+
+        print(heur)
+        print(move)
         play_move(state,move)
         print_table(gen_table_state_with_empty_positions(state))
 

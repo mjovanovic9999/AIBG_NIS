@@ -1,12 +1,10 @@
 from copy import deepcopy
-from functools import cache
 from queue import Queue
 from constants import ALPHA_START, BETA_START, COMMANDO, COMMANDO_ATTACK_MATRIX, COMMANDO_PLACE_MATRIX, GUNNER, GUNNER_PLACE_MATRIX, INFANTRY, INFANTRY_ATTACK_MATRIX, INFANTRY_PLACE_MATRIX, MORTAR, MORTAR_PLACE_MATRIX
 from heuristic import evaluate
 from validators import is_attacked, is_free
 
 
-#@cache
 def minmax(
     state,
     depth,
@@ -18,7 +16,9 @@ def minmax(
     my_move=None,
 ):  # vraca (value,move)
     if depth == 0:
-        return (evaluate(state, is_player_min if on_turn_min else on_turn_max), my_move)
+        if not my_move=={'type': 0, 'figureCoords': {'x': 0, 'y': 2}, 'playerID': '1', 'targetCoords': {'x': 0, 'y': 1}, 'figureType': 1}:
+            pass
+        return (evaluate(state[0], is_player_min if on_turn_min else on_turn_max), my_move)
 
     if is_player_min:
         for new_state in generate_next_states(state, on_turn_max, on_turn_min, True):
@@ -159,38 +159,38 @@ def generate_next_states(state, on_turn_max, on_turn_min, is_player_min):
     # moves
     for index in my_figures_indexes:
 
-        if state[index]["figureType"] == INFANTRY:
+        if state[0][index]["figureType"] == INFANTRY:
             posible_positions = generate_figure_moves(
-                state, state[index], INFANTRY, INFANTRY_PLACE_MATRIX)
+                state[0], state[0][index], INFANTRY, INFANTRY_PLACE_MATRIX)
             for move in posible_positions:
-                new_states.append((deepcopy(state), form_action(
-                    0, (state[index]["coordX"], state[index]["coordY"]), on_turn, move, state[index]["figureType"])))
+                new_states.append((deepcopy(state[0]), form_action(
+                    0, (state[0][index]["coordX"], state[0][index]["coordY"]), on_turn, move, state[0][index]["figureType"])))
                 new_states[-1][0][index]["coordX"] = move[0]
                 new_states[-1][0][index]["coordY"] = move[1]
 
         elif figure["figureType"] == GUNNER:
             posible_positions = generate_figure_moves(
-                state, state[index], GUNNER, GUNNER_PLACE_MATRIX)
+                state[0], state[0][index], GUNNER, GUNNER_PLACE_MATRIX)
             for move in posible_positions:
-                new_states.append((deepcopy(state), form_action(
-                    0, (state[index]["coordX"], state[index]["coordY"]), on_turn, move, state[index]["figureType"])))
+                new_states.append((deepcopy(state[0]), form_action(
+                    0, (state[0][index]["coordX"], state[0][index]["coordY"]), on_turn, move, state[0][index]["figureType"])))
                 new_states[-1][0][index]["coordX"] = move[0]
                 new_states[-1][0][index]["coordY"] = move[1]
 
         elif figure["figureType"] == MORTAR:
             posible_positions = generate_figure_moves(
-                state, state[index], MORTAR, MORTAR_PLACE_MATRIX)
+                state[0], state[0][index], MORTAR, MORTAR_PLACE_MATRIX)
             for move in posible_positions:
-                new_states.append((deepcopy(state), form_action(
-                    0, (state[index]["coordX"], state[index]["coordY"]), on_turn, move, state[index]["figureType"])))
+                new_states.append((deepcopy(state[0]), form_action(
+                    0, (state[0][index]["coordX"], state[0][index]["coordY"]), on_turn, move, state[0][index]["figureType"])))
                 new_states[-1][0][index]["coordX"] = move[0]
                 new_states[-1][0][index]["coordY"] = move[1]
         else:
             posible_positions = generate_figure_moves(
-                state, state[index], COMMANDO, COMMANDO_PLACE_MATRIX)
+                state[0], state[0][index], COMMANDO, COMMANDO_PLACE_MATRIX)
             for move in posible_positions:
-                new_states.append((deepcopy(state), form_action(
-                    0, (state[index]["coordX"], state[index]["coordY"]), on_turn, move, state[index]["figureType"])))
+                new_states.append((deepcopy(state[0]), form_action(
+                    0, (state[0][index]["coordX"], state[0][index]["coordY"]), on_turn, move, state[0][index]["figureType"])))
                 new_states[-1][0][index]["coordX"] = move[0]
                 new_states[-1][0][index]["coordY"] = move[1]
 
@@ -200,46 +200,46 @@ def generate_next_states(state, on_turn_max, on_turn_min, is_player_min):
     # optimizacija jer napadnute pozicije se mnogo malo razlikuju izmedju stanja
     for opponent_index in opponent_figures_indexes:
         for index in my_figures_indexes:
-            if state[index]["figureType"] == COMMANDO:
+            if state[0][index]["figureType"] == COMMANDO:
                 commando_index = index
                 continue
 
-            if is_attacked(state[index], state[opponent_index], state):
+            if is_attacked(state[0][index], state[0][opponent_index], state[0]):
                 eating_pair_indexes.append((opponent_index, index))
                 break
 
     for eating_pair in eating_pair_indexes:
         new_states.append(
-            (deepcopy(state),
+            (deepcopy(state[0]),
              form_action(1,
-             (state[eating_pair[1]]["coordX"],
-              state[eating_pair[1]]["coordY"]),
+             (state[0][eating_pair[1]]["coordX"],
+              state[0][eating_pair[1]]["coordY"]),
                 on_turn,
-                (state[eating_pair[0]]["coordX"],
-                 state[eating_pair[0]]["coordY"]),
-                state[eating_pair[1]]["figureType"]))
+                (state[0][eating_pair[0]]["coordX"],
+                 state[0][eating_pair[0]]["coordY"]),
+                state[0][eating_pair[1]]["figureType"]))
         )
 
-        # new_states.append(deepcopy(state))
-        del new_states[-1][eating_pair[0]]
+        # new_states.append(deepcopy(state[0]))
+        del new_states[-1][0][eating_pair[0]]
 
     if commando_index:
         for opponent_index in opponent_figures_indexes:
-            if is_attacked(state[commando_index], state[opponent_index], state):
+            if is_attacked(state[0][commando_index], state[0][opponent_index], state[0]):
 
                 new_states.append(
-                    (deepcopy(state),
+                    (deepcopy(state[0]),
                      form_action(1,
-                                 (state[commando_index]["coordX"],
-                                  state[commando_index]["coordY"]),
+                                 (state[0][commando_index]["coordX"],
+                                  state[0][commando_index]["coordY"]),
                                  on_turn,
-                                 (state[opponent_index]["coordX"],
-                                     state[opponent_index]["coordY"]),
+                                 (state[0][opponent_index]["coordX"],
+                                     state[0][opponent_index]["coordY"]),
                                  commando_index))
                 )
 
-                new_states[-1][commando_index]["coordX"] = state[opponent_index]["coordX"]
-                new_states[-1][commando_index]["coordY"] = state[opponent_index]["coordY"]
+                new_states[-1][commando_index]["coordX"] = state[0][opponent_index]["coordX"]
+                new_states[-1][commando_index]["coordY"] = state[0][opponent_index]["coordY"]
 
                 del new_states[-1][opponent_index]
 
