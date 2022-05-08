@@ -58,6 +58,76 @@ def minmax(
                 return beta
         return alpha
 
+# def iterative_deepening( 
+#     state,
+#     depth,
+#     on_turn_max,
+#     on_turn_min,
+#     is_player_min=False,
+#     alpha=(ALPHA_START, None),
+#     beta=(BETA_START, None),
+#     my_move=None,
+# ):
+#     return
+
+
+# @cache
+# def minmax_pvs(
+#     state,
+#     depth,
+#     on_turn_max,
+#     on_turn_min,
+#     is_player_min=False,
+#     alpha=(ALPHA_START, None),
+#     beta=(BETA_START, None),
+#     my_move=None,
+# ):  # vraca (value,move)
+#     if depth == 0:
+#         return (evaluate(state, is_player_min if on_turn_min else on_turn_max), my_move)
+
+#     found_pvs = False
+#     new_states = generate_next_states(state, on_turn_max, on_turn_min, True)
+#     if is_player_min:
+#         for new_state in new_states:
+#             if new_state == new_states[0]:
+#                 beta = minmax_pvs(state, depth-1, on_turn_max, on_turn_min,
+#                                    not is_player_min, alpha, new_state[1] if my_move is None else my_move)
+#             beta = min(
+#                 beta,
+#                 minmax(
+#                     new_state,
+#                     depth-1,
+#                     on_turn_max,
+#                     on_turn_min,
+#                     False,
+#                     alpha,
+#                     beta,
+#                     new_state[1] if my_move is None else my_move
+#                 ),
+#                 key=lambda x: x[0])
+#             if alpha[0] >= beta[0]:
+#                 return alpha
+#         return beta
+
+#     else:  # maxplayer
+#         for new_state in generate_next_states(state, on_turn_max, on_turn_min, False):
+#             alpha = max(
+#                 alpha,
+#                 minmax(
+#                     new_state,
+#                     depth-1,
+#                     on_turn_max,
+#                     on_turn_min,
+#                     True,
+#                     alpha,
+#                     beta,
+#                     new_state[1] if my_move is None else my_move
+#                 ),
+#                 key=lambda x: x[0])
+#             if alpha[0] >= beta[0]:
+#                 return beta
+#         return alpha
+
 
 def form_action(type, figure_coords: tuple, id, target: tuple, figure_type):
     action = {
@@ -144,10 +214,10 @@ def generate_next_states(state, on_turn_max, on_turn_min, is_player_min):
              form_action(1,
              (state[eating_pair[1]]["coordX"],
               state[eating_pair[1]]["coordY"]),
-              on_turn,
-              (state[eating_pair[0]]["coordX"],
-              state[eating_pair[0]]["coordY"]),
-              state[eating_pair[1]]["figureType"]))
+                on_turn,
+                (state[eating_pair[0]]["coordX"],
+                 state[eating_pair[0]]["coordY"]),
+                state[eating_pair[1]]["figureType"]))
         )
 
         # new_states.append(deepcopy(state))
@@ -159,14 +229,14 @@ def generate_next_states(state, on_turn_max, on_turn_min, is_player_min):
 
                 new_states.append(
                     (deepcopy(state),
-                    form_action(1,
-                    (state[commando_index]["coordX"],
-                    state[commando_index]["coordY"]),
-                    on_turn,
-                    (state[opponent_index]["coordX"],
-                    state[opponent_index]["coordY"]),
-                    commando_index))
-                    )
+                     form_action(1,
+                                 (state[commando_index]["coordX"],
+                                  state[commando_index]["coordY"]),
+                                 on_turn,
+                                 (state[opponent_index]["coordX"],
+                                     state[opponent_index]["coordY"]),
+                                 commando_index))
+                )
 
                 new_states[-1][commando_index]["coordX"] = state[opponent_index]["coordX"]
                 new_states[-1][commando_index]["coordY"] = state[opponent_index]["coordY"]
