@@ -41,12 +41,13 @@ def play_move(state,move):
         state.remove(toremove)
 
 def start_game():
-    minimax_depth=3
+    minimax_depth=2
     state=init_state
     print_table(gen_table_state_with_empty_positions(state))
     while True:
-        ret=minmax(state,minimax_depth,"1","2")
-        print(ret)
+        heur,move=minmax(state,minimax_depth,"1","2")
+        print(heur)
+        print(move)
         play_move(state,move)
         print_table(gen_table_state_with_empty_positions(state))
 

@@ -150,7 +150,7 @@ def generate_next_states(state, on_turn_max, on_turn_min, is_player_min):
     action = {'type': 1, 'figureCoords': {'x': 1, 'y': 2},
               'playerID': '123', 'targetCoords': {'x': 1, 'y': 2}, 'figureType': 0}
 
-    for index, figure in state:
+    for index, figure in enumerate(state):
         if figure["playerID"] == on_turn:
             my_figures_indexes.append(index)
         else:
@@ -250,9 +250,9 @@ def generate_figure_moves(game_state, figure, fig_type, fig_move_matrix):
     all_moves = set()
     if(figure["figureType"] == fig_type):
         origin = (figure["coordX"], figure["coordY"])
-        q = Queue()
+        q = Queue(24)
         q.put(origin)
-        while q:
+        while not q.empty():
             pos = q.get()
             for x in range(-1, 2):
                 for y in range(-1, 2):
