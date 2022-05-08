@@ -1,7 +1,7 @@
 import bisect
 from copy import deepcopy
 from queue import Queue
-from constants import ALPHA_START, BETA_START, COMMANDO, COMMANDO_ATTACK_MATRIX, COMMANDO_PLACE_MATRIX, GUNNER, GUNNER_PLACE_MATRIX, INFANTRY, INFANTRY_ATTACK_MATRIX, INFANTRY_PLACE_MATRIX, MORTAR, MORTAR_PLACE_MATRIX
+from constants import ALPHA_START, BETA_START, COMMANDO, COMMANDO_ATTACK_MATRIX, COMMANDO_PLACE_MATRIX, CUTOFF, GUNNER, GUNNER_PLACE_MATRIX, INFANTRY, INFANTRY_ATTACK_MATRIX, INFANTRY_PLACE_MATRIX, MORTAR, MORTAR_PLACE_MATRIX
 from heuristic import evaluate
 from validators import is_attacked, is_free
 
@@ -178,7 +178,7 @@ def form_action(type, figure_coords: tuple, id, target: tuple, figure_type):
 
 
 def generate_next_states(state, on_turn_max, on_turn_min, is_player_min):
-    max_states=3
+    max_states=CUTOFF
 
     on_turn = on_turn_min if is_player_min else on_turn_max
 
@@ -261,7 +261,7 @@ def state_cleanup(is_player_min,best_values,new_states,on_turn):
 
 def state_insert(is_player_min,best_values,max_states,new_states,on_turn):
     if is_player_min:
-        eval=evaluate(new_states[-1][0],on_turn)
+        eval=-evaluate(new_states[-1][0],on_turn)
         new_states.append((new_states[-1],eval))
         new_states.remove(new_states[-2])
         if len(best_values)<max_states:

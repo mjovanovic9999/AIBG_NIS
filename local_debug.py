@@ -1,5 +1,5 @@
 import time
-from constants import GUNNER,MORTAR,COMMANDO,INFANTRY
+from constants import GUNNER, MINMAX_DEPTH,MORTAR,COMMANDO,INFANTRY
 from helpers import print_table,gen_table_state_with_empty_positions
 from minmax import minmax, minmax_dict, pvs
 from copy import deepcopy
@@ -26,15 +26,6 @@ init_state = [
 ]
 
 def play_move(state,move):
-    for_validation=deepcopy(move)
-    for_validation["GB"]=state
-    if not validate_move(for_validation):
-         print(state)
-         print(move)
-         print_table(gen_table_state_with_empty_positions(state))
-         print("NEVALIDAN POTEZ")
-    else:
-         print("VALIDAN!")
     toremove=dict()
     if(move["type"]==0):
         for figure in state:
@@ -52,7 +43,7 @@ def play_move(state,move):
         state.remove(toremove)
 
 def start_game():
-    minimax_depth=3
+    minimax_depth=MINMAX_DEPTH
     state=init_state
     print_table(gen_table_state_with_empty_positions(state),"1")
     while True:
