@@ -28,7 +28,11 @@ init_state = [
 def play_move(state,move):
     for_validation=deepcopy(move)
     for_validation["GB"]=state
-    #print(validate_move(for_validation))
+    if not validate_move(for_validation):
+        print(state)
+        print(move)
+        print_table(gen_table_state_with_empty_positions(state))
+        print("NEVALIDAN POTEZ")
     #VALIDATORAAT
     toremove=dict()
     if(move["type"]==0):
@@ -47,7 +51,7 @@ def play_move(state,move):
         state.remove(toremove)
 
 def start_game():
-    minimax_depth=2
+    minimax_depth=1
     state=init_state
     print_table(gen_table_state_with_empty_positions(state))
     while True:
