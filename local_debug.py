@@ -28,14 +28,13 @@ init_state = [
 def play_move(state,move):
     for_validation=deepcopy(move)
     for_validation["GB"]=state
-    # if not validate_move(for_validation):
-    #     print(state)
-    #     print(move)
-    #     print_table(gen_table_state_with_empty_positions(state))
-    #     print("NEVALIDAN POTEZ")
-    # else:
-    #     print("VALIDAN!")
-    #VALIDATORAAT
+    if not validate_move(for_validation):
+         print(state)
+         print(move)
+         print_table(gen_table_state_with_empty_positions(state))
+         print("NEVALIDAN POTEZ")
+    else:
+         print("VALIDAN!")
     toremove=dict()
     if(move["type"]==0):
         for figure in state:
@@ -53,26 +52,26 @@ def play_move(state,move):
         state.remove(toremove)
 
 def start_game():
-    minimax_depth=4
+    minimax_depth=3
     state=init_state
-    print_table(gen_table_state_with_empty_positions(state))
+    print_table(gen_table_state_with_empty_positions(state),"1")
     while True:
         old_time=time.time()
-        heur,move=minmax_dict((state,None),minimax_depth,"1","2",True,state_dict=dict())
+        heur,move=minmax((state,None),minimax_depth,"1","2")
         print(time.time()-old_time)
         print(heur)
         print(move)
         play_move(state,move)
-        print_table(gen_table_state_with_empty_positions(state))
+        print_table(gen_table_state_with_empty_positions(state),"1")
 
         old_time=time.time()
-        heur,move=minmax_dict((state,None),minimax_depth,"2","1",True,state_dict=dict())
+        heur,move=minmax((state,None),minimax_depth,"2","1")
         print(time.time()-old_time)
 
         print(heur)
         print(move)
         play_move(state,move)
-        print_table(gen_table_state_with_empty_positions(state))
+        print_table(gen_table_state_with_empty_positions(state),"1")
 
 
 

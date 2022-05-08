@@ -3,6 +3,8 @@ import socketio
 import requests
 
 from constants import MINMAX_DEPTH
+from helpers import print_table
+from minmax import minmax
 
 
 def init_connection(game_state: dict[str, Any]):
@@ -10,7 +12,8 @@ def init_connection(game_state: dict[str, Any]):
 
     add_event_handlers(sio, game_state)
 
-    sio.connect("http://localhost:3000")
+    ime = input("Ime")
+    sio.connect("http://localhost:3001")
 
     sio.emit('setName', "Klika010")
 
@@ -31,15 +34,18 @@ def add_event_handlers(sio: socketio.Client, game_state: dict[str, Any]) -> None
         print("I'm disconnected!")
 
     @sio.event
-    def yourTurn(table_state: dict[str, Any]):
+    def yourTurn(table_state: list[dict[str, Any]]):
         print("Your turn!")
+       # print_table(table_state, game_state["botID"])
         game_state["table_state"] = table_state
         
-        # for position in table_state:
-        #     if position["botID"] != game_state["botID"]:
-        #         print(position["botID"])
-        #         submit_move(minmax(table_state, MINMAX_DEPTH, game_state["botID"])[1])
-        #         break
+        #print(table_state)
+
+        for position in table_state:
+            if position["playerID"] != game_state["botID"]:
+              #  print(position["botID"])
+                submit_move(minmax((table_state, None), MINMAX_DEPTH, game_state["botID"], position["playerID"])[1])
+                break
 
     @sio.event
     def readyToBattle(bot_id: str):
@@ -48,8 +54,8 @@ def add_event_handlers(sio: socketio.Client, game_state: dict[str, Any]) -> None
 
 
 def validate_move(move: dict[str, Any]) -> bool:
-    return bool(requests.post("http://localhost:3000/validateAction", json=move).text)
+    return bool(requests.post("http://localhost:3001/validateAction", json=move).text)
 
 
 def submit_move(move: dict[str, Any]) -> None:
-    print(requests.post("http://localhost:3000/doAction", json=move))
+    requests.post("http://localhost:3001/doAction", json=move)
