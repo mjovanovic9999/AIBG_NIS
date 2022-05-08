@@ -1,6 +1,3 @@
-from audioop import minmax
-from socket import socket
-from turtle import pos
 from typing import Any
 import socketio
 import requests
@@ -38,11 +35,11 @@ def add_event_handlers(sio: socketio.Client, game_state: dict[str, Any]) -> None
         print("Your turn!")
         game_state["table_state"] = table_state
         
-        for position in table_state:
-            if position["botID"] != game_state["botID"]:
-                print(position["botID"])
-                submit_move(minmax(table_state, MINMAX_DEPTH, game_state["botID"])[2])
-                break
+        # for position in table_state:
+        #     if position["botID"] != game_state["botID"]:
+        #         print(position["botID"])
+        #         submit_move(minmax(table_state, MINMAX_DEPTH, game_state["botID"])[1])
+        #         break
 
     @sio.event
     def readyToBattle(bot_id: str):
