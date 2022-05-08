@@ -120,6 +120,8 @@ def is_attacked(attacker:dict, defender:dict, game_state:list):
                         return True
                     elif is_free(game_state,attacker["coordX"]+1,attacker["coordY"]) and attacker["coordX"] < defender["coordX"]:
                         return True
+                else:
+                    return True
             elif diff == 3:
                 #isto x
                 if(attacker["coordX"]==defender["coordX"]):

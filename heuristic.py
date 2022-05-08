@@ -14,48 +14,54 @@ def get_figure_value(figure:dict):
 
 def evaluate(game_state:list,on_turn:str):
     fig_shift=9
-    att_shift=9
-    bait_shift=5
-    pos_shift = 9
+    att_shift=3
+    bait_shift=2
+    pos_shift = 2
     setAttacking = set()
 
     value=0
 
     for figure in game_state:
-        # eval figure
         figure_val=get_figure_value(figure)
 
         if(figure["playerID"]==on_turn):
+            #moja figura
             value+=figure_val<<fig_shift
-
+            '''
             is_defended=False
             for ally in game_state:
                 if ally["playerID"]==on_turn and ally!=figure and is_attacked(ally,figure,game_state):
                     is_defended=True
+            '''
 
             for opponent in game_state:
                 if opponent["playerID"]!=on_turn and is_attacked(opponent,figure,game_state):
+                    '''
                     if opponent["figureType"]==constants.COMMANDO:
                         if is_defended:
                             value+=figure_val<<bait_shift
                         else:
                             value-=figure_val<<att_shift
                     else:
-                        value-=figure_val<<att_shift
+                    '''
+                    value-=figure_val<<att_shift
         else:
-            value-=figure_val
-
+            value-=figure_val<<fig_shift
+            '''
             is_defended=False
             for ally in game_state:
-                if ally["playerID"]!=on_turn and ally!=figure and is_attacked(ally,figure,game_state):
-                    is_defended=True
-
-            for opponent in game_state:
-                if opponent["playerID"]!=on_turn and is_attacked(figure,opponent,game_state):
-                    if opponent["figureType"]==constants.COMMANDO:
+                if ally["playerID"]==on_turn and ally!=figure and is_attacked(ally,figure,game_state):
+                   is_defended=True
+            '''
+            #zapravo moj
+            for ally in game_state:
+                if ally["playerID"]!=on_turn and is_attacked(ally,figure,game_state):
+                        '''
+                    if ally["figureType"]==constants.COMMANDO:
                         if not is_defended:
                             value+=figure_val<<att_shift
                     else:
+                        '''
                         value+=figure_val<<att_shift
 
         #pozicija
