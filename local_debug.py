@@ -1,7 +1,7 @@
 import time
 from constants import GUNNER,MORTAR,COMMANDO,INFANTRY
 from helpers import print_table,gen_table_state_with_empty_positions
-from minmax import minmax
+from minmax import minmax, minmax_dict, pvs
 from copy import deepcopy
 from connection import validate_move
 
@@ -28,13 +28,13 @@ init_state = [
 def play_move(state,move):
     for_validation=deepcopy(move)
     for_validation["GB"]=state
-    if not validate_move(for_validation):
-        print(state)
-        print(move)
-        print_table(gen_table_state_with_empty_positions(state))
-        print("NEVALIDAN POTEZ")
-    else:
-        print("VALIDAN!")
+    # if not validate_move(for_validation):
+    #     print(state)
+    #     print(move)
+    #     print_table(gen_table_state_with_empty_positions(state))
+    #     print("NEVALIDAN POTEZ")
+    # else:
+    #     print("VALIDAN!")
     #VALIDATORAAT
     toremove=dict()
     if(move["type"]==0):
@@ -53,12 +53,12 @@ def play_move(state,move):
         state.remove(toremove)
 
 def start_game():
-    minimax_depth=2
+    minimax_depth=4
     state=init_state
     print_table(gen_table_state_with_empty_positions(state))
     while True:
         old_time=time.time()
-        heur,move=minmax((state,None),minimax_depth,"1","2")
+        heur,move=minmax_dict((state,None),minimax_depth,"1","2",True,state_dict=dict())
         print(time.time()-old_time)
         print(heur)
         print(move)
@@ -66,7 +66,7 @@ def start_game():
         print_table(gen_table_state_with_empty_positions(state))
 
         old_time=time.time()
-        heur,move=minmax((state,None),minimax_depth,"2","1")
+        heur,move=minmax_dict((state,None),minimax_depth,"2","1",True,state_dict=dict())
         print(time.time()-old_time)
 
         print(heur)
