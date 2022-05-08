@@ -1,9 +1,7 @@
 import time
 from constants import GUNNER, MINMAX_DEPTH,MORTAR,COMMANDO,INFANTRY
 from helpers import print_table,gen_table_state_with_empty_positions
-from minmax import minmax, minmax_dict, pvs
-from copy import deepcopy
-from connection import validate_move
+from minmax import minmax
 
 init_state = [
         {"coordX": 0,"coordY": 2, "figureType": GUNNER, "playerID": "1"} ,

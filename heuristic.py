@@ -1,4 +1,3 @@
-from math import sqrt
 import constants
 from validators import is_attacked
 
@@ -18,6 +17,7 @@ def evaluate(game_state:list,on_turn:str):
     bait_shift=2
     pos_shift = 1
     setAttacking = set()
+    setDefending = set()
 
     value=0
 
@@ -62,7 +62,7 @@ def evaluate(game_state:list,on_turn:str):
                             value+=figure_val<<att_shift
                     else:
                         '''
-                        value+=figure_val<<att_shift
+                        value+=figure_val<<(att_shift+1)
 
         #pozicija
         if(figure["playerID"] == on_turn):
@@ -82,6 +82,24 @@ def evaluate(game_state:list,on_turn:str):
                 for positions in constants.COMMANDO_ATTACK_MATRIX:
                     if -1<figure["coordX"]+positions[0]<13 and -1<figure["coordY"]+positions[1]<11:
                         setAttacking.add((figure["coordX"]+positions[0],figure["coordY"]+positions[1]))
-        value += len(setAttacking)<<pos_shift
+            value += len(setAttacking)<<pos_shift
+        else:
+            if (figure["figureType"] == constants.INFANTRY):
+                for positions in constants.INFANTRY_ATTACK_MATRIX:
+                    if -1<figure["coordX"]+positions[0]<13 and -1<figure["coordY"]+positions[1]<11:
+                        setDefending.add((figure["coordX"]+positions[0],figure["coordY"]+positions[1]))
+            if(figure["figureType"] == constants.GUNNER):
+                for positions in constants.GUNNER_ATTACK_MATRIX:
+                    if -1<figure["coordX"]+positions[0]<13 and -1<figure["coordY"]+positions[1]<11:
+                        setDefending.add((figure["coordX"]+positions[0],figure["coordY"]+positions[1]))
+            if(figure["figureType"] == constants.MORTAR):
+                for positions in constants.MORTAR_ATTACK_MATRIX:
+                    if -1<figure["coordX"]+positions[0]<13 and -1<figure["coordY"]+positions[1]<11:
+                        setDefending.add((figure["coordX"]+positions[0],figure["coordY"]+positions[1]))
+            if(figure["figureType"] == constants.COMMANDO):
+                for positions in constants.COMMANDO_ATTACK_MATRIX:
+                    if -1<figure["coordX"]+positions[0]<13 and -1<figure["coordY"]+positions[1]<11:
+                        setDefending.add((figure["coordX"]+positions[0],figure["coordY"]+positions[1]))
+            value -= len(setDefending)<<pos_shift
 
     return value

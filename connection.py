@@ -3,7 +3,6 @@ import socketio
 import requests
 
 from constants import MINMAX_DEPTH
-from helpers import print_table
 from minmax import minmax
 
 
@@ -35,8 +34,8 @@ def add_event_handlers(sio: socketio.Client, game_state: dict[str, Any]) -> None
 
     @sio.event
     def yourTurn(table_state: list[dict[str, Any]]):
-        print("Your turn!")
-       # print_table(table_state, game_state["botID"])
+        #print("Your turn!")
+        #print_table(table_state, game_state["botID"])
         game_state["table_state"] = table_state
         
         #print(table_state)
