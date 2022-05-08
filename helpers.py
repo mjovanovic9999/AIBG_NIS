@@ -2,7 +2,7 @@ from typing import Any
 
 def print_table(table_state: list[dict[str, Any]]) -> None:
     char_to_print = ""
-    first_player_id = table_state[0]["playerID"]
+    first_player_id = ""
     table = ""
     
 
@@ -13,6 +13,9 @@ def print_table(table_state: list[dict[str, Any]]) -> None:
             if figureType == -1:
                 char_to_print = "--"
             else:
+                if not first_player_id:
+                    first_player_id = table_state[i * 11 +j]["playerID"]
+                    
                 number_of_player = "1" if table_state[i * 11 +
                                                       j]["playerID"] == first_player_id else "2"
                 if figureType == 0:
