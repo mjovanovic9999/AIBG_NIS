@@ -51,7 +51,7 @@ def play_move(state,move):
         state.remove(toremove)
 
 def start_game():
-    minimax_depth=1
+    minimax_depth=2
     state=init_state
     print_table(gen_table_state_with_empty_positions(state))
     while True:
