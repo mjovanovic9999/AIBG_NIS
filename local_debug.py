@@ -33,6 +33,8 @@ def play_move(state,move):
         print(move)
         print_table(gen_table_state_with_empty_positions(state))
         print("NEVALIDAN POTEZ")
+    else:
+        print("VALIDAN!")
     #VALIDATORAAT
     toremove=dict()
     if(move["type"]==0):
