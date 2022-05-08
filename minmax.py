@@ -257,10 +257,12 @@ def generate_figure_moves(game_state, figure, fig_type, fig_move_matrix):
             for x in range(-1, 2):
                 for y in range(-1, 2):
                     new_pos = (pos[0]+x, pos[1]+y)
-                    if new_pos!=pos and new_pos != origin and 13 > new_pos[0] > -1 and 11 > new_pos[1] > -1 and is_free(game_state, new_pos[0], new_pos[1]) and (new_pos[0]-origin[0], new_pos[1]-origin[1]) in fig_move_matrix:
-                        if new_pos not in all_moves:
-                            all_moves.add(new_pos)
-                            q.put(new_pos)
+                    if new_pos!=pos and new_pos != origin and 13 > new_pos[0] > -1 and 11 > new_pos[1] > -1:
+                        if is_free(game_state, new_pos[0], new_pos[1]) :
+                            if (new_pos[0]-origin[0], new_pos[1]-origin[1]) in fig_move_matrix:
+                                if new_pos not in all_moves:
+                                    all_moves.add(new_pos)
+                                    q.put(new_pos)
     return all_moves
 
 
