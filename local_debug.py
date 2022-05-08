@@ -1,7 +1,7 @@
 import time
 from constants import GUNNER,MORTAR,COMMANDO,INFANTRY
 from helpers import print_table,gen_table_state_with_empty_positions
-from minmax import minmax
+from minmax import minmax, pvs
 from copy import deepcopy
 from connection import validate_move
 
@@ -51,12 +51,12 @@ def play_move(state,move):
         state.remove(toremove)
 
 def start_game():
-    minimax_depth=2
+    minimax_depth=3
     state=init_state
     print_table(gen_table_state_with_empty_positions(state))
     while True:
         old_time=time.time()
-        heur,move=minmax((state,None),minimax_depth,"1","2")
+        heur,move=pvs((state,None),minimax_depth,"1","2")
         print(time.time()-old_time)
         print(heur)
         print(move)
@@ -64,7 +64,7 @@ def start_game():
         print_table(gen_table_state_with_empty_positions(state))
 
         old_time=time.time()
-        heur,move=minmax((state,None),minimax_depth,"2","1")
+        heur,move=pvs((state,None),minimax_depth,"2","1")
         print(time.time()-old_time)
 
         print(heur)
